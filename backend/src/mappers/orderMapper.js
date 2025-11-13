@@ -1,0 +1,1 @@
+const { OrderDto } = require('../dtos/orderDtos'); module.exports = { toDto: (row) => new OrderDto(row) };

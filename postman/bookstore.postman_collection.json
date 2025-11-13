@@ -1,0 +1,142 @@
+{
+  "info": {
+    "name": "BookStore API",
+    "_postman_id": "bookstore-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /books",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/books",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "books"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /books/:id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/books/1",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "books",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "POST /books",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\\n  \"title\":\"Postman Book\",\\n  \"author_id\":1,\\n  \"isbn\":\"PM-1234\",\\n  \"price\":5.99,\\n  \"published_date\":\"2025-01-01\"\\n}"
+        },
+        "url": {
+          "raw": "{{base}}/books",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "books"
+          ]
+        }
+      }
+    },
+    {
+      "name": "PUT /books/:id",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\\n  \"title\":\"Updated Book\",\\n  \"author_id\":1,\\n  \"isbn\":\"PUT-1\",\\n  \"price\":10.99,\\n  \"published_date\":\"2020-01-01\"\\n}"
+        },
+        "url": {
+          "raw": "{{base}}/books/1",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "books",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "PATCH /books/:id",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\\n  \"price\":1.11\\n}"
+        },
+        "url": {
+          "raw": "{{base}}/books/1",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "books",
+            "1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "DELETE /books/:id",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base}}/books/1",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "books",
+            "1"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base",
+      "value": "http://localhost:4000/api"
+    }
+  ]
+}
