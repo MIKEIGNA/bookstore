@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<APIProxy name="bookstore-api">
+  <DisplayName>Bookstore API</DisplayName>
+  <Description>Proxy to backend bookstore API with Verify API Key policy</Description>
+  <Basepaths>/bookstore/api</Basepaths>
+  <Policies>
+    <Policy>Verify-API-Key</Policy>
+  </Policies>
+  <ProxyEndpoints>
+    <ProxyEndpoint>default</ProxyEndpoint>
+  </ProxyEndpoints>
+  <TargetEndpoints>
+    <TargetEndpoint>default</TargetEndpoint>
+  </TargetEndpoints>
+</APIProxy>

@@ -26,6 +26,10 @@ CREATE TABLE orders (
   customer_name TEXT
 );
 
+-- Helpful indexes
+CREATE INDEX IF NOT EXISTS idx_books_author_id ON books(author_id);
+CREATE INDEX IF NOT EXISTS idx_orders_book_id ON orders(book_id);
+
 -- Insert authors
 INSERT INTO authors(name,bio) VALUES
 ('J.K. Rowling','Author of Harry Potter series'),

@@ -1,0 +1,5 @@
+region = "us-east-1"
+project_name = "bookstore"
+ecr_repo_name = "bookstore-api"
+cluster_name = "bookstore-cluster"
+logs_group = "/ecs/bookstore-api"

@@ -1,0 +1,94 @@
+name: deploy-backend-to-ecs-task
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag'
+        default: latest
+        required: true
+
+jobs:
+  build-push-run:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push backend image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./backend
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Register/Update task definition
+        id: taskdef
+        run: |
+          cat > taskdef.json << 'JSON'
+          {
+            "family": "${{ secrets.ECS_TASK_FAMILY }}",
+            "networkMode": "awsvpc",
+            "cpu": "256",
+            "memory": "512",
+            "requiresCompatibilities": ["FARGATE"],
+            "executionRoleArn": "${{ secrets.ECS_EXECUTION_ROLE_ARN }}",
+            "taskRoleArn": "${{ secrets.ECS_TASK_ROLE_ARN }}",
+            "containerDefinitions": [
+              {
+                "name": "backend",
+                "image": "${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.event.inputs.image_tag }}",
+                "essential": true,
+                "portMappings": [{"containerPort": 4000, "hostPort": 4000, "protocol": "tcp"}],
+                "environment": [
+                  {"name":"PORT","value":"4000"},
+                  {"name":"DATABASE_URL","value":"${{ secrets.DATABASE_URL }}"},
+                  {"name":"NODE_ENV","value":"production"}
+                ],
+                "logConfiguration": {
+                  "logDriver": "awslogs",
+                  "options": {
+                    "awslogs-group": "/ecs/${{ secrets.ECS_TASK_FAMILY }}",
+                    "awslogs-region": "${{ secrets.AWS_REGION }}",
+                    "awslogs-stream-prefix": "ecs"
+                  }
+                },
+                "healthCheck": {
+                  "command": ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"],
+                  "startPeriod": 10,
+                  "interval": 30,
+                  "timeout": 5,
+                  "retries": 3
+                }
+              }
+            ]
+          }
+          JSON
+          aws ecs register-task-definition --cli-input-json file://taskdef.json > out.json
+          cat out.json | jq -r '.taskDefinition.revision' > revision.txt
+
+      - name: Run one-off task
+        env:
+          CLUSTER: ${{ secrets.ECS_CLUSTER }}
+        run: |
+          REV=$(cat revision.txt)
+          aws ecs run-task \
+            --cluster "$CLUSTER" \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[${{ secrets.SUBNET_IDS }}],securityGroups=[${{ secrets.SECURITY_GROUP_IDS }}],assignPublicIp=ENABLED}" \
+            --task-definition "${{ secrets.ECS_TASK_FAMILY }}:$REV"
