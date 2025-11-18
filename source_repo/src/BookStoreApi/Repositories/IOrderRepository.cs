@@ -1,0 +1,1 @@
+using BookStoreApi.Models; namespace BookStoreApi.Repositories; public interface IOrderRepository { Task<IEnumerable<Order>> GetAllAsync(); Task<Order?> GetByIdAsync(int id); Task<Order> CreateAsync(Order order); Task<Order?> ReplaceAsync(int id, Order order); Task<Order?> UpdateAsync(int id, object partial); Task DeleteAsync(int id); }

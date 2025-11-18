@@ -1,0 +1,1 @@
+using BookStoreApi.Models; namespace BookStoreApi.Repositories; public interface IAuthorRepository { Task<IEnumerable<Author>> GetAllAsync(); Task<Author?> GetByIdAsync(int id); Task<Author> CreateAsync(Author author); Task<Author?> ReplaceAsync(int id, Author author); Task<Author?> UpdateAsync(int id, object partial); Task DeleteAsync(int id); }

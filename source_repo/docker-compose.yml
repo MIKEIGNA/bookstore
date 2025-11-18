@@ -1,0 +1,50 @@
+# version: '3.8'
+# services:
+#   postgres:
+#     image: postgres:15-alpine
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: bookstore
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+#     ports:
+#       - "5432:5432"
+#   bookstoreapi:
+#     build: ./src/BookStoreApi
+#     depends_on:
+#       - postgres
+#     environment:
+#       - DATABASE_URL=Host=postgres;Port=5432;Database=bookstore;Username=postgres;Password=postgres
+#     ports:
+#       - "5000:80"
+# volumes:
+#   pgdata:
+
+services:
+  db:
+    image: postgres:15
+    container_name: bookstore_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bookstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./src/BookStoreApi
+      dockerfile: Dockerfile
+    container_name: bookstore_api
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=bookstore;Username=postgres;Password=postgres"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

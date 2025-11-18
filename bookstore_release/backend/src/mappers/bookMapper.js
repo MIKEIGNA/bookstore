@@ -1,0 +1,1 @@
+const { BookDto } = require('../dtos/bookDtos'); module.exports = { toDto: (row) => new BookDto(row) };

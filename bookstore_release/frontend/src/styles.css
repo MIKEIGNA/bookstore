@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; margin:20px; }
+.container { max-width:900px; margin:0 auto; }
+.controls { margin-bottom:12px; }
+.row { margin-bottom:6px; }
+.actions button { margin-right:6px; }

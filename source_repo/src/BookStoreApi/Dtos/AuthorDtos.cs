@@ -1,0 +1,1 @@
+namespace BookStoreApi.Dtos; public class AuthorCreateDto { public string Name { get; set; } = string.Empty; public string? Bio { get; set; } } public class AuthorUpdateDto { public string? Name { get; set; } public string? Bio { get; set; } } public class AuthorDto { public int Id { get; set; } public string Name { get; set; } = string.Empty; public string? Bio { get; set; } }
